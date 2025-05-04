@@ -5,6 +5,7 @@ import {
   MdEmail,
   MdPhone,
 } from "react-icons/md";
+import { MapPinHouse } from 'lucide-react'
 
 import { FaRulerCombined, FaArrowRight } from "react-icons/fa";
 import Carousel from "@/public/components/Carousel";
@@ -119,9 +120,12 @@ export default function Details() {
       </div>
 
       {/* Map section */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">Location</h2>
-        <div className="rounded-xl overflow-hidden shadow-lg h-96">
+      <div className="mt-8">
+        <div className="flex items-center gap-3 text-primaryColor text-2xl font-bold mb-4">
+          <h2>Location</h2>
+          <MapPinHouse/>
+        </div>
+        <div className="rounded-xl overflow-hidden shadow-lg h-[450px]">
           <Map location={[9.561944, 44.089833]} />
         </div>
       </div>

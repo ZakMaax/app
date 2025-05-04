@@ -6,7 +6,7 @@ export default function Properties() {
       <main className="pt-24">
         <div className="md:max-w-7xl  mx-auto flex flex-col md:items-center px-4 py-6">
           <PropertyFilter />
-          <div className="grid items-center grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid items-center grid-cols-1 gap-3 md:grid-cols-3">
             <Listing />
             <Listing />
             <Listing />

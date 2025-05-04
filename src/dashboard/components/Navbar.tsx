@@ -1,0 +1,56 @@
+import { LogOut, Settings, User, PanelRightClose, PanelLeftClose} from "lucide-react";
+import { Link } from "react-router-dom";
+import me from '@/assets/me.png'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ModeToggle } from "@/components/mode-toggle";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+
+
+export default function Navbar() {
+
+  const {toggleSidebar, open} = useSidebar()
+
+  return (
+    <nav className="p-4 flex items-center justify-between">
+       <Button variant="outline" onClick={toggleSidebar}>
+          {
+            open ? <PanelLeftClose/> : <PanelRightClose/> 
+          }
+       </Button>
+
+      
+      <div className="flex  items-center gap-4">
+         <Link to='/dashboard'>Dashboard</Link>
+         <ModeToggle/>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Avatar>
+            <AvatarImage src={me} />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent sideOffset={10}>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem><User className="h-[1.2rem] w-[1.2rem] mr-2"/> Profile</DropdownMenuItem>
+          <DropdownMenuItem><Settings className="h-[1.2rem] w-[1.2rem] mr-2"/> Settings</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive"><LogOut className="h-[1.2rem] w-[1.2rem] mr-2"/> Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+
+      </div>
+
+    </nav>
+  )
+}

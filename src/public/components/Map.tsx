@@ -41,7 +41,7 @@ export default function Map({ location = [51.505, -0.09] }) {
         center={location}
         zoom={15}
         maxZoom={22}
-        className="h-[400px] w-full z-0"
+        className="h-[450px] w-full z-0"
       >
         <ChangeView center={location} zoom={15} />
         <CenteredMarker location={location} />

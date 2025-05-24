@@ -1,4 +1,10 @@
-export default function PropertyTypeButton({ children, onSelect, isSelected }) {
+import React from 'react'
+type componentProps = {
+  children: React.ReactNode,
+  onSelect: () => void,
+  isSelected: boolean
+}
+export default function PropertyTypeButton({ children, onSelect, isSelected }: componentProps) {
   return (
     <button
       onClick={onSelect}

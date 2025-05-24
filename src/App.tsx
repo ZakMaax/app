@@ -1,11 +1,15 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {Toaster} from "react-hot-toast"
 import Home from "@/public/pages/Home"
 import Properties from "@/public/pages/Properties";
 import PublicLayout from "@/public/pages/RootLayout";
 import Error404 from "@/public/pages/Error404";
 import Details from "@/public/pages/Details";
-import Layout from "./dashboard/pages/layout";
-import Dashboard from "./dashboard/pages/dashboard";
+import Layout from "@/dashboard/pages/Layout";
+import Dashboard from "@/dashboard/pages/Dashboard"
+import Users from "@/dashboard/pages/Users"
+import CreateProperty from "@/dashboard/pages/CreateProperty";
+import CreateUser from "@/dashboard/pages/CreateUser";
 
 import "leaflet/dist/leaflet.css";
 import DashboardProperties from "./dashboard/pages/Dashboard-Properties";
@@ -13,29 +17,37 @@ import DashboardProperties from "./dashboard/pages/Dashboard-Properties";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <PublicLayout />,
+    Component: PublicLayout,
     errorElement: <Error404 />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "listings/", element: <Properties /> },
-      { path: "listings/:listing", element: <Details /> },
+      { index: true, Component: Home },
+      { path: "listings/",Component: Properties },
+      { path: "listings/:listing", Component: Details },
     ],
   },
 
   {
-    path: "dashboard/",
+    path: "admin-dashboard/",
     element: <Layout/>,
 
     children:[
-      {index: true, element: <Dashboard/>},
-      {path: 'properties', element: <DashboardProperties/>},
+      {index: true, Component: Dashboard},
+      {path: 'properties', Component: DashboardProperties},
+      {path: 'properties/add-property', Component: CreateProperty},
+      {path: 'users', Component: Users},
+      {path: 'users/add-user', Component: CreateUser},
     ]
   }
 ]);
 
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <div><Toaster position="bottom-right"/></div>
+    </>
+  );
 }
 
 export default App;

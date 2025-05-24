@@ -71,7 +71,6 @@ export default function Contact() {
               <div className="flex">
                 <div className="flex items-center mr-11">
                   <input
-                    checked
                     id="radio-group-1"
                     type="radio"
                     name="radio-group"

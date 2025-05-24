@@ -10,7 +10,17 @@ export type Payment = {
 export const columns: ColumnDef<Payment>[] = [
     {
         accessorKey: 'id',
-        header: "ID"
+        header: "ID",
+        cell: ({ row }) => {
+            const id = row.getValue('id') as string;
+            // Shorten the UUID for display
+            const shortenedId = `${id.substring(0, 2)}...${id.substring(id.length - 2)}`;
+            return (
+              <span title={id}>
+                {shortenedId}
+              </span>
+            );
+          },
     },
     {
         accessorKey: "amount",

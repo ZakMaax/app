@@ -49,7 +49,8 @@ export default function Header() {
 
               <li className="group relative">
                 <NavLink
-                  to="/listings"
+                  to="listings"
+                  end
                   className={({ isActive }) =>
                     `block text-center transition-all duration-300 ${
                       isActive
@@ -71,7 +72,7 @@ export default function Header() {
 
               <li className="group relative">
                 <NavLink
-                  to="/about"
+                  to="about"
                   className={({ isActive }) =>
                     `block text-center transition-all duration-300 ${
                       isActive
@@ -93,7 +94,7 @@ export default function Header() {
 
               <li className="group relative">
                 <NavLink
-                  to="/contact"
+                  to="contact"
                   className={({ isActive }) =>
                     `block text-center transition-all duration-300 ${
                       isActive
@@ -170,7 +171,7 @@ export default function Header() {
             </li>
             <li>
               <NavLink
-                to="/listings"
+                to="listings"
                 className={({ isActive }) =>
                   `block ${isActive ? "text-primaryColor" : "text-gray-700"}`
                 }
@@ -181,7 +182,7 @@ export default function Header() {
             </li>
             <li>
               <NavLink
-                to="/about"
+                to="about"
                 className={({ isActive }) =>
                   `block ${isActive ? "text-primaryColor" : "text-gray-700"}`
                 }
@@ -192,7 +193,7 @@ export default function Header() {
             </li>
             <li>
               <NavLink
-                to="/contact"
+                to="contact"
                 className={({ isActive }) =>
                   `block ${isActive ? "text-primaryColor" : "text-gray-700"}`
                 }

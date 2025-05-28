@@ -1,16 +1,17 @@
 import { Button } from "@/components/ui/button";
-import AppPieChart from "../components/charts/AppPieChart";
-import UsersTable from "../components/users-table/UsersTable";
 import { Plus } from "lucide-react";
 import { Link, useLoaderData, useNavigate} from "react-router-dom";
 import { UserType } from "@/utils/types";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import TableSkeleton from "@/dashboard/components/skeletons/TableSkeleton"
-
+import ChartsSkeleton from "@/dashboard/components/skeletons/ChartsSkeleton";
+const UsersTable = lazy(() => import("@/dashboard/components/users-table/UsersTable"));
+const AppPieChart = lazy(() => import("@/dashboard/components/charts/AppPieChart"));
 
 export default function Users() {
   const users: UserType[] = useLoaderData()
   const navigate = useNavigate(); // Initialize useNavigate
+  
   
   const handleEditUser = (user: UserType) => {
     navigate('/admin-dashboard/users/edit-user', { state: { userToEdit: user } });
@@ -19,13 +20,20 @@ export default function Users() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="bg-primary-foreground p-4 rounded-lg">
-        <AppPieChart />
+        <Suspense fallback={ <ChartsSkeleton/>}>
+          <AppPieChart />
+        </Suspense>
+        
       </div>
       <div className="bg-primary-foreground p-4 rounded-lg">
-        <AppPieChart />
+      <Suspense fallback={ <ChartsSkeleton/>}>
+          <AppPieChart />
+        </Suspense>
       </div>
       <div className="bg-primary-foreground p-4 rounded-lg">
-        <AppPieChart />
+      <Suspense fallback={ <ChartsSkeleton/>}>
+          <AppPieChart />
+        </Suspense>
       </div>
 
       

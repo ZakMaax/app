@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {Toaster} from "react-hot-toast"
 import Home from "@/public/pages/Home"
+import About from "@/public/pages/About"
 import Properties from "@/public/pages/Properties";
 import PublicLayout from "@/public/pages/RootLayout";
 import Error404 from "@/public/pages/Error404";
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
     errorElement: <Error404 />,
     children: [
       { index: true, Component: Home },
+      { path: "about", Component: About },
       { path: "listings/",Component: Properties },
       { path: "listings/:listing", Component: Details },
     ],

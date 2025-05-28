@@ -1,71 +1,16 @@
 import { DataTable } from "../Data-Table";
-import { columns, Payment} from "./Columns";
+import { propertyColumns} from "./PropertyColumns";
+import {PropertyType} from '@/utils/types'
 
 
-const data: Payment[] = [
-    {
-      id: "728ed52f345678903456789034567890",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "71",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
+const data: PropertyType[] = [
+     
   ]
 
 export default function PropertiesTable() {
   return (
      <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={propertyColumns} data={data} />
     </div>
   )
 }

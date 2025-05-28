@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { userSchema, Roles, FilesWithPreview} from '@/utils/schemas'
+import { userEditSchema, Roles, FilesWithPreview} from '@/utils/schemas'
 import { PhoneInput } from '@/components/Phone-input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -13,18 +13,19 @@ import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import ImageUploader from '@/dashboard/components/ImageUploader'
 
-export default function CreateUser() {
+export default function EditUser() {
   const [submitting, setSubmitting] = useState(false)
   const [files, setFiles] = useState<FilesWithPreview[]>([])
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation(); 
+  const userToEdit = location.state?.userToEdit;
 
-  const form = useForm<z.infer<typeof userSchema>>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<z.infer<typeof userEditSchema>>({
+    resolver: zodResolver(userEditSchema),
     defaultValues: {
       name: '',
       username: '',
       email: '',
-      password: '',
       phone_number: '',
       role: Roles.agent,
       avatar: new File([], "")
@@ -41,43 +42,70 @@ export default function CreateUser() {
     }
   }, [files, form])
 
-  async function onSubmit(userData: z.infer<typeof userSchema>) {
-    const formData = new FormData()
-    formData.append('name', userData.name)
-    formData.append('username', userData.username)
-    formData.append('email', userData.email)
-    formData.append('phone_number', userData.phone_number)
-    formData.append('password', userData.password)
-    formData.append('role', userData.role)
+ // ...existing code...
 
-    if (userData.avatar) {
-      formData.append('avatar', userData.avatar)
+async function onSubmit(userData: z.infer<typeof userEditSchema>) {
+    if (!userToEdit?.id) {
+      toast.error('User ID not found');
+      return;
     }
-
+  
+    const formData = new FormData();
+    formData.append('name', userData.name);
+    formData.append('username', userData.username);
+    formData.append('email', userData.email);
+    formData.append('phone_number', userData.phone_number);
+    formData.append('role', userData.role);
+  
+    if (userData.avatar) {
+      formData.append('avatar', userData.avatar);
+    }
+  
     try {
-      setSubmitting(true)
-      const response = await fetch('http://127.0.0.1:8000/api/v1/users', {
-        method: 'POST',
-        body: formData
-      })
-
-      const res = await response.json()
+      setSubmitting(true);
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/users/${userToEdit.id}`, {
+        method: 'PUT',
+        body: formData,
+      });
+  
+      const res = await response.json();
       if (response.ok) {
-        toast.success('User created successfully')
-        console.log(res)
+        toast.success('User updated successfully');
         setTimeout(() => {
-          navigate('/admin-dashboard/users')
-        }, 2000)
+          navigate('/admin-dashboard/users');
+        }, 2000);
       } else {
-        toast.error(res.detail || 'Something happened while creating user')
+        toast.error(res.detail || 'Something happened while updating user');
       }
     } catch (error) {
-      console.error(error)
-      toast.error('Network error occurred')
+      console.error(error);
+      toast.error('Network error occurred');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
+  
+  // ...existing code...
+
+  useEffect(() => {
+    if (userToEdit) {
+      form.reset({
+        name: userToEdit.name || '',
+        username: userToEdit.username || '',
+        email: userToEdit.email || '',
+        phone_number: userToEdit.phone_number.slice(4).replaceAll('-', '') || '',
+        role: userToEdit.role || Roles.agent,
+      });
+      if (userToEdit.avatar) {
+        setFiles([Object.assign(
+          new File([], 'existing_avatar', { type: 'image/jpeg' }),
+          { preview: userToEdit.avatar }
+        )]);
+      } else {
+        setFiles([]); // No existing avatar
+      }
+    }
+  }, [userToEdit, form]);
 
   return (
     <Form {...form}>
@@ -130,18 +158,6 @@ export default function CreateUser() {
                 &emsp;&emsp;(65-999-9999)-Somtel<br />
                 &emsp;&emsp;(67-777-7777)-Soltelco
               </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )} />
-        </div>
-
-        <div className="bg-primary-foreground p-4 rounded-lg">
-          <FormField control={form.control} name="password" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="password" type="password" {...field} />
-              </FormControl>
               <FormMessage />
             </FormItem>
           )} />

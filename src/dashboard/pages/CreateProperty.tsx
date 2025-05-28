@@ -26,14 +26,14 @@ import {
 import ImageUploader from '../components/ImageUploader'
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import {Agent} from "@/utils/types"
 
-
-
+type Agents = Agent[]
 type propertyFormType = z.infer<typeof propertySchema>
 
 export default function CreateProperty() {
 const [files, setFiles] = useState<FilesWithPreview[]>([])
-const [agents, setAgents] = useState([])
+const [agents, setAgents] = useState<Agents>([])
 const [submitting, setSubmitting] = useState(false)
 const navigate = useNavigate()
 
@@ -44,11 +44,8 @@ const navigate = useNavigate()
             if (!res.ok) {
                 throw new Error(`HTTP error! Status: ${res.status}`);
               }
-            const data = await res.json()
-            const agents = data.map(obj => ({
-                    agent_name: obj.name,
-                    agent_id: obj.id
-            }))
+            const data: Agents = await res.json()
+            console.log(data)
             setAgents(agents)
             
         } catch (error) {
@@ -120,7 +117,7 @@ const navigate = useNavigate()
               console.log(res)
               setTimeout(() => {
                 navigate('/admin-dashboard/properties')
-              }, 3000)
+              }, 2000)
             } else {
               toast.error(res.detail || 'Something happened while creating user')
             }
@@ -368,7 +365,7 @@ const navigate = useNavigate()
                     <SelectContent>
                         {
                             agents.map(agent => (
-                                 <SelectItem key={agent.agent_id}  value={agent.agent_id}>{agent.agent_name}</SelectItem>
+                                 <SelectItem key={agent.id}  value={agent.id}>{agent.name}</SelectItem>
                             ))
                         }
                     </SelectContent>

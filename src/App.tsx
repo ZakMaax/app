@@ -10,6 +10,8 @@ import Dashboard from "@/dashboard/pages/Dashboard"
 import Users from "@/dashboard/pages/Users"
 import CreateProperty from "@/dashboard/pages/CreateProperty";
 import CreateUser from "@/dashboard/pages/CreateUser";
+import EditUser from "@/dashboard/pages/EditUser";
+import {get_users, get_agents} from "@/API/api"
 
 import "leaflet/dist/leaflet.css";
 import DashboardProperties from "./dashboard/pages/Dashboard-Properties";
@@ -31,11 +33,18 @@ const router = createBrowserRouter([
     element: <Layout/>,
 
     children:[
-      {index: true, Component: Dashboard},
+      {index: true, loader: async () => {
+        const agents = await get_agents() 
+        return agents
+      }, Component: Dashboard},
       {path: 'properties', Component: DashboardProperties},
       {path: 'properties/add-property', Component: CreateProperty},
-      {path: 'users', Component: Users},
+      {path: 'users', loader: async () => {
+        const users = await get_users() 
+        return users
+      }, Component: Users},
       {path: 'users/add-user', Component: CreateUser},
+      {path: 'users/edit-user', Component: EditUser},
     ]
   }
 ]);

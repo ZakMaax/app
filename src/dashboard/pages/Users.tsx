@@ -1,10 +1,20 @@
 import { Button } from "@/components/ui/button";
 import AppPieChart from "../components/charts/AppPieChart";
-import PropertiesTable from "../components/properties-table/PropertiesTable";
+import UsersTable from "../components/users-table/UsersTable";
 import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLoaderData, useNavigate} from "react-router-dom";
+import { UserType } from "@/utils/types";
+import { Suspense } from "react";
+import TableSkeleton from "@/dashboard/components/skeletons/TableSkeleton"
+
 
 export default function Users() {
+  const users: UserType[] = useLoaderData()
+  const navigate = useNavigate(); // Initialize useNavigate
+  
+  const handleEditUser = (user: UserType) => {
+    navigate('/admin-dashboard/users/edit-user', { state: { userToEdit: user } });
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -33,7 +43,9 @@ export default function Users() {
             </Link>
         </div>
 
-        <PropertiesTable />
+        <Suspense fallback={<TableSkeleton/>}>
+          <UsersTable data={users} onEdit={handleEditUser} />
+        </Suspense>
       </div>
 
     </div>

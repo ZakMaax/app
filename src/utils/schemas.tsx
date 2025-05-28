@@ -193,14 +193,71 @@ export const userSchema = z.object({
   }),
 
   avatar: z
-    .instanceof(File, { message: "User avatar is required" })
-    .refine(file => file.size > 0, {
+    .instanceof(File).optional()
+    .refine((file) => !file || file.size > 0, {
       message: "Avatar file cannot be empty"
     })
-    .refine(file => file.size <= MAX_FILE_SIZE, {
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
       message: `Image must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`
     })
-    .refine(file => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+    .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), {
+      message: `Only ${ACCEPTED_IMAGE_TYPES.map(t => t.split('/')[1]).join(', ')} images are allowed`
+    })
+})
+
+
+export const userEditSchema = z.object({
+  name: z
+    .string({ required_error: "Name is required" })
+    .min(4, { message: "Name must be at least 4 characters" })
+    .max(50, { message: "Name must be less than 50 characters" })
+    .refine(val => val.trim().length > 0, {
+      message: "Name cannot be just whitespace"
+    })
+    .refine(val => isNaN(Number(val)), {
+      message: "Name cannot be a number"
+    }),
+
+  username: z
+    .string({ required_error: "Username is required" })
+    .min(5, { message: "Username must be at least 5 characters" })
+    .max(20, { message: "Username must be less than 20 characters" })
+    .regex(/^[a-zA-Z0-9_]+$/, {
+      message: "Username can only contain letters, numbers, and underscores"
+    })
+    .refine(val => isNaN(Number(val)), {
+      message: "Username cannot be just numbers"
+    })
+    .refine(val => isNaN(Number(val[0])), {
+      message: "Username cannot start with a number"
+    }),
+
+  email: z
+    .string({ 
+      required_error: "Email is required", 
+      invalid_type_error: "Email must be a string" 
+    })
+    .email({ message: "Invalid email address" })
+    .max(100, { message: "Email must be less than 100 characters" }),
+
+  phone_number: z
+    .string({ required_error: "Phone number is required" })
+    .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+
+  role: z.nativeEnum(Roles, {
+    required_error: "User role is required",
+    invalid_type_error: `Role must be one of: ${Object.values(Roles).join(', ')}`
+  }),
+
+  avatar: z
+    .instanceof(File).optional()
+    .refine((file) => !file || file.size > 0, {
+      message: "Avatar file cannot be empty"
+    })
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
+      message: `Image must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`
+    })
+    .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), {
       message: `Only ${ACCEPTED_IMAGE_TYPES.map(t => t.split('/')[1]).join(', ')} images are allowed`
     })
 })
@@ -213,3 +270,4 @@ export const loginSchema = z.object({
     required_error: "Password is required"
   })
 })
+

@@ -5,28 +5,93 @@ import {
   MdEmail,
   MdPhone,
 } from "react-icons/md";
-import { MapPinHouse } from 'lucide-react'
-
+import { MapPinHouse } from "lucide-react";
 import { FaRulerCombined, FaArrowRight } from "react-icons/fa";
 import Carousel from "@/public/components/Carousel";
-import Guri from "@/assets/Guri.jpg";
-import Guri1 from "@/assets/Guri.jpg";
-import Guri2 from "@/assets/Contact.png";
-import Guri3 from "@/assets/Hero.png";
-import Guri4 from "@/assets/bangalo.jpg";
 import Map from "../components/Map";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Appointment from "../components/Appointment";
-
-const images = [Guri1, Guri2, Guri3, Guri4];
+import Default from "@/assets/Default.webp";
 
 export default function Details() {
+  const { listingID } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<any>(null);
 
-  const handleScheduleSubmit = (formData) => {
+  useEffect(() => {
+    async function getProperty() {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(
+          `http://localhost:8000/api/v1/properties/property/${listingID}`
+        );
+        if (!res.ok) {
+          setError("Property Not Found");
+          setData(null);
+        } else {
+          const data = await res.json();
+          setData(data);
+        }
+      } catch (error) {
+        console.log(error)
+        setError("Failed to fetch property");
+        setData(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getProperty();
+  }, [listingID]);
+
+  const handleScheduleSubmit = (formData: any) => {
     console.log("Viewing scheduled:", formData);
     // Here you would typically send the data to your backend
   };
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen" role="status">
+        <svg
+          aria-hidden="true"
+          className="w-14 h-14 text-gray-200 animate-spin dark:text-gray-600 fill-primaryColor"
+          viewBox="0 0 100 101"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+            fill="currentColor"
+          />
+          <path
+            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+            fill="currentFill"
+          />
+        </svg>
+        <span className="sr-only">Loading...</span>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-600 text-xl">
+        {error}
+      </div>
+    );
+
+  if (!data) return null;
+
+  // Build images array
+  const images =
+    data.images && data.images.length > 0
+      ? data.images.map(
+          (img: string) =>
+            `http://localhost:8000/uploads/properties/${data.id}/${img}`
+        )
+      : [Default];
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-30 pb-8">
@@ -41,15 +106,15 @@ export default function Details() {
             <div className="flex flex-wrap gap-4 justify-center md:justify-between">
               <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
                 <MdKingBed className="text-2xl text-primaryColor" />
-                <span className="text-lg font-medium">7 rooms</span>
+                <span className="text-lg font-medium">{data.bedrooms} rooms</span>
               </div>
               <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
                 <MdBathtub className="text-2xl text-primaryColor" />
-                <span className="text-lg font-medium">5 bathrooms</span>
+                <span className="text-lg font-medium">{data.bathrooms} bathrooms</span>
               </div>
               <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
                 <FaRulerCombined className="text-2xl text-primaryColor" />
-                <span className="text-lg font-medium">24x18m</span>
+                <span className="text-lg font-medium">{data.size} sqft</span>
               </div>
             </div>
           </div>
@@ -59,24 +124,18 @@ export default function Details() {
         <div className="flex-1 space-y-6">
           <div className="space-y-3">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">
-              Bangalo
+              {data.title}
             </h1>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-2 text-lg text-gray-600">
                 <MdLocationOn className="text-primaryColor" />
-                <span>Jigjiga yar</span>
+                <span>{data.address}</span>
               </div>
-              <p className="text-3xl font-bold text-primaryColor">$24,000</p>
+              <p className="text-3xl font-bold text-primaryColor">${data.price}</p>
             </div>
           </div>
 
-          <p className="text-gray-700 leading-relaxed">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi ullam
-            porro facere voluptas earum rem aut reprehenderit nemo illum
-            laboriosam temporibus dolores, quaerat perspiciatis dolorem nostrum
-            non! Maxime, facilis cum? Lorem ipsum dolor sit amet consectetur
-            adipisicing elit.
-          </p>
+          <p className="text-gray-700 leading-relaxed">{data.description}</p>
 
           <button
             onClick={() => setIsModalOpen(true)}
@@ -92,27 +151,27 @@ export default function Details() {
             onSubmit={handleScheduleSubmit}
           />
 
-          {/* Agent contact card */}
+          {/* Agent contact card (replace with real agent data if available) */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <div className="flex items-center gap-4 mb-4">
               <img
-                src={Guri}
+                src={data.agent.avatar_url ? `http://localhost:8000/${data.agent.avatar_url}` : `http://localhost:8000/uploads/default_avatar.png`}
                 alt="Agent"
                 className="w-16 h-16 rounded-full object-cover border-2 border-primary"
               />
               <div>
-                <h3 className="font-bold text-lg">John Doe</h3>
+                <h3 className="font-bold text-lg">{data.agent.name || "Agent"}</h3>
                 <p className="text-gray-600">Real Estate Agent</p>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-gray-700">
                 <MdPhone className="text-primaryColor" />
-                <span>+1 (555) 123-4567</span>
+                <span>{data.agent.phone_number || "N/A"}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <MdEmail className="text-primaryColor" />
-                <span>john.doe@example.com</span>
+                <span>{data.agent.email || "N/A"}</span>
               </div>
             </div>
           </div>
@@ -123,10 +182,10 @@ export default function Details() {
       <div className="mt-8">
         <div className="flex items-center gap-3 text-primaryColor text-2xl font-bold mb-4">
           <h2>Location</h2>
-          <MapPinHouse/>
+          <MapPinHouse />
         </div>
         <div className="rounded-xl overflow-hidden shadow-lg h-[450px]">
-          <Map location={[9.561944, 44.089833]} />
+          <Map location={[data.latitude, data.longitude]} />
         </div>
       </div>
     </div>

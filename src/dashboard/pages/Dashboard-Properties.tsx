@@ -2,10 +2,16 @@ import { Button } from "@/components/ui/button";
 import AppPieChart from "../components/charts/AppPieChart";
 import PropertiesTable from "../components/properties-table/PropertiesTable";
 import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import {Property} from '@/utils/types'
 
 export default function DashboardProperties() {
-  
+  const propertiesData: Property[] = useLoaderData()
+  const navigate = useNavigate()
+
+  const handleEditProperty = (property: Property) => {
+    navigate('/admin-dashboard/properties/edit-property', { state: { propertyToEdit: property } });
+  };
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="bg-primary-foreground p-4 rounded-lg">
@@ -31,7 +37,7 @@ export default function DashboardProperties() {
             </Link>
         </div>
 
-        <PropertiesTable />
+        <PropertiesTable data={propertiesData} onEdit={handleEditProperty} />
       </div>
 
     </div>

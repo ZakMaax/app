@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {SaleRent} from "./types"
 import { isValidPhoneNumber } from 'react-phone-number-input'
 export enum PropertyType {
   RESIDENTIAL = "residential",
@@ -11,10 +12,6 @@ export interface FilesWithPreview extends File {
   preview: string
 }
 
-export enum SaleOrRent {
-  SALE = "sale",
-  RENT = "rent"
-}
 
 export enum Roles {
   admin = "admin",
@@ -101,7 +98,7 @@ export const propertySchema = z.object({
     required_error: 'Property type is required.',
   }),
 
-  sale_or_rent: z.enum([SaleOrRent.SALE, SaleOrRent.RENT], {
+  sale_or_rent: z.enum([SaleRent.SALE, SaleRent.RENT], {
     required_error: 'Sale or Rent option is required.',
   }),
 
@@ -126,6 +123,107 @@ export const propertySchema = z.object({
   )
   .min(1, "At least one image is required")
   .max(10, "Maximum 10 images allowed"),
+});
+
+
+export const editPropertySchema = z.object({
+  title: z.string({
+    required_error: 'Property title is required.',
+    invalid_type_error: 'Property title must be a valid string.',
+  }).min(3, {
+    message: 'Property title must be at least 3 characters long.',
+  }),
+
+  city: z.string({
+    required_error: 'City is required.',
+    invalid_type_error: 'City must be a valid string.',
+  }).min(2, {
+    message: 'City must be at least 2 characters long.',
+  }),
+
+  address: z.string({
+    required_error: 'Property address is required.',
+    invalid_type_error: 'Property address must be a valid string.',
+  }).min(5, {
+    message: 'Property address must be at least 5 characters long.',
+  }),
+
+  bedrooms: z.number({
+    required_error: 'Number of bedrooms is required.',
+    invalid_type_error: 'Number of bedrooms must be a valid number.',
+  }).min(0, {
+    message: 'Number of bedrooms cannot be less than 0.',
+  }),
+
+  bathrooms: z.number({
+    required_error: 'Number of bathrooms is required.',
+    invalid_type_error: 'Number of bathrooms must be a valid number.',
+  }).min(0, {
+    message: 'Number of bathrooms cannot be less than 0.',
+  }),
+
+  price: z.number({
+    required_error: 'Property price is required.',
+    invalid_type_error: 'Price must be a valid number.',
+  }).min(0, {
+    message: 'Property price must be at least 0.',
+  }),
+
+  size: z.number({
+    required_error: 'Property size is required.',
+    invalid_type_error: 'Property size must be a valid number.',
+  }).min(0, {
+    message: 'Property size must be at least 0.',
+  }),
+
+  latitude: z.number({
+    required_error: 'Latitude is required',
+  })
+  .min(-90, 'Invalid latitude')
+  .max(90, 'Invalid latitude'),
+
+  longitude: z.number({
+    required_error: 'Longitude is required',
+  })
+  .min(-180, 'Invalid longitude')
+  .max(180, 'Invalid longitude'),
+
+  floor: z.number({
+    invalid_type_error: 'Floor number must be a valid number.',
+  }).min(0, {
+    message: 'Floor number must be at least 0.',
+  }).optional(),
+
+  type: z.enum([PropertyType.RESIDENTIAL, PropertyType.APARTMENT, PropertyType.COMMERCIAL, PropertyType.LAND], {
+    required_error: 'Property type is required.',
+  }),
+
+  sale_or_rent: z.enum([SaleRent.SALE, SaleRent.RENT], {
+    required_error: 'Sale or Rent option is required.',
+  }),
+
+  agent_id: z.string({
+    required_error: 'Agent name is required.',
+    invalid_type_error: 'Agent name must be a valid string.',
+  }),
+
+  description: z.string({
+    required_error: 'Description is required.',
+    invalid_type_error: 'Description must be a valid string.',
+  }).min(10, {
+    message: 'Description must be at least 10 characters long.',
+  }),
+
+  files: z
+  .array(
+    z.instanceof(File)
+      .refine(file => file.size > 0, "File cannot be empty")
+      .refine(file => file.size <= MAX_FILE_SIZE, `Max file size is ${MAX_FILE_SIZE/1024/1024}MB`)
+      .refine(file => ACCEPTED_IMAGE_TYPES.includes(file.type), 
+        `Only ${ACCEPTED_IMAGE_TYPES.map(t => t.split('/')[1]).join(', ')} images are allowed`)
+  )
+  .max(10, "Maximum 10 images allowed")
+  .optional(),
 });
 
 
@@ -204,6 +302,7 @@ export const userSchema = z.object({
       message: `Only ${ACCEPTED_IMAGE_TYPES.map(t => t.split('/')[1]).join(', ')} images are allowed`
     })
 })
+
 
 
 export const userEditSchema = z.object({

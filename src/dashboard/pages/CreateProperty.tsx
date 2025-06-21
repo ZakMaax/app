@@ -1,9 +1,10 @@
 import {z} from 'zod'
 import { toast } from 'react-hot-toast'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useLoaderData} from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { propertySchema, PropertyType, SaleOrRent, FilesWithPreview } from '@/utils/schemas'
+import { propertySchema, PropertyType, FilesWithPreview } from '@/utils/schemas'
+import { SaleRent} from '@/utils/types'
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -28,33 +29,14 @@ import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import {Agent} from "@/utils/types"
 
-type Agents = Agent[]
 type propertyFormType = z.infer<typeof propertySchema>
 
 export default function CreateProperty() {
 const [files, setFiles] = useState<FilesWithPreview[]>([])
-const [agents, setAgents] = useState<Agents>([])
+
 const [submitting, setSubmitting] = useState(false)
 const navigate = useNavigate()
-
- useEffect(()=> {
-    async function get_agents() {
-        try {
-            const res = await fetch("http://127.0.0.1:8000/api/v1/users/agents/")
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-              }
-            const data: Agents = await res.json()
-            console.log(data)
-            setAgents(agents)
-            
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    get_agents()
- }, [])
+const agents: Agent[] = useLoaderData()
 
   const form = useForm<propertyFormType>({
     resolver: zodResolver(propertySchema),
@@ -69,7 +51,7 @@ const navigate = useNavigate()
         price: 0,
         latitude: 0,
         longitude: 0,
-        sale_or_rent: SaleOrRent.SALE,
+        sale_or_rent: SaleRent.SALE,
         size: 0,
         type: PropertyType.RESIDENTIAL,
         files: []
@@ -337,7 +319,7 @@ const navigate = useNavigate()
                     </FormControl>
                     <SelectContent>
                         {
-                            Object.values(SaleOrRent).map(type => (
+                            Object.values(SaleRent).map(type => (
                                  <SelectItem key={type}  value={type}>{type}</SelectItem>
                             ))
                         }

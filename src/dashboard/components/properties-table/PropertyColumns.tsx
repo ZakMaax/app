@@ -1,14 +1,22 @@
 import { ColumnDef } from '@tanstack/react-table'
-import {Property, PropertyType, SaleRent} from '@/utils/types'
+import { Property, PropertyType, SaleRent } from '@/utils/types'
+import { StatusDropdown } from '@/dashboard/components/StatusDropdown';
+import FeaturedCell from '@/dashboard/components/FeaturedToggle'
+import { PropertyActions } from '@/dashboard/components/PropertyActions';
+interface ColumnProps {
+  onDelete: (propertyId: string) => void,
+  onEdit: (property: Property) => void,
+}
 
-export const propertyColumns: ColumnDef<Property>[] = [
+
+export const propertyColumns = ({ onDelete, onEdit }: ColumnProps): ColumnDef<Property>[] => [
   {
     accessorKey: 'id',
     header: 'ID',
     cell: ({ row }) => {
       const id = row.original.id;
-      return (typeof id === 'string' && id.length >= 4) 
-        ? `${id.substring(0, 2)}...${id.slice(-2)}` 
+      return (typeof id === 'string' && id.length >= 4)
+        ? `${id.substring(0, 2)}${id.slice(-2)}`
         : id;
     },
   },
@@ -65,14 +73,12 @@ export const propertyColumns: ColumnDef<Property>[] = [
     },
   },
   {
-    accessorKey: 'published_at',
+    accessorKey: 'published_date',
     header: 'Published Date',
     cell: ({ row }) => {
-      const dateString = row.getValue('published_at'); 
-      
+      const dateString = row.getValue('published_date');
       if (typeof dateString !== 'string' || dateString.trim() === '') {
-        console.warn("published_date is not a valid string or is empty:", dateString);
-        return 'N/A'; 
+        return 'N/A';
       }
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
@@ -84,14 +90,40 @@ export const propertyColumns: ColumnDef<Property>[] = [
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        hour12: true, 
+        hour12: true,
       }).format(date);
 
       return formattedDate;
     },
   },
   {
-    accessorKey: 'description',
-    header: 'Description',
+    accessorKey: 'featured',
+    header: 'Featured',
+    cell: ({ row }) => (
+      <FeaturedCell
+        initialValue={row.getValue('featured')}
+        propertyId={row.original.id}
+      />
+    )
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => (
+      <StatusDropdown
+        propertyId={row.original.id}
+        initialStatus={row.getValue('status')}
+      />
+    ),
+  },
+  {
+    id: "actions",
+    header: "Property Actions",
+    cell: ({ row }) => {
+      const property = row.original;
+         return (
+                <PropertyActions property={property} onDelete={onDelete} onEdit={onEdit} />
+        );
+    },
   },
 ];

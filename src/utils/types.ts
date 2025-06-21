@@ -6,12 +6,13 @@ export interface Agent {
     username: string
     role: string
     avatar_url: string
+    date_created: string
 }
 
 export enum PropertyType {
   APARTMENT = "apartment",
-  HOUSE = "house",
-  CONDO = "condo",
+  RESIDENTIAL = "residential",
+  COMMERCIAL = "commercial",
   LAND = "land",
 }
 
@@ -20,18 +21,37 @@ export enum SaleRent {
   RENT = "rent",
 }
 
+export enum PropertyStatus{
+    available = "available",
+    sold = "sold",
+    rented = "rented"
+}
+
 export type Property = {
   id: string; 
   title: string;
   city: string;
-  description: string;
+  featured: boolean;
   address: string;
   bedrooms: number; 
   bathrooms: number; 
+  description: string;
   size: number; 
   price: number; 
-  published_at: string;
+  type: PropertyType
+  latitude?: number;
+  longitude?: number;
+  floor?: number;
+  agent_id?: string;
+  published_date: string;
+  sale_or_rent: SaleRent
+  status: PropertyStatus
+  images: Array<string>
 
+};
+
+export type PropertyWithAgent = Property & {
+  agent?: Agent | null;
 };
 
 export enum Role {

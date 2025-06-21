@@ -15,7 +15,7 @@ export default function Hero() {
             Explore our range of beautiful properties with the addition of
             separate accommodation suitable for you.
           </p>
-          <PropertyFilter />
+          <PropertyFilter redirectOnSubmit />
         </div>
         <img
           src={HeroImage}

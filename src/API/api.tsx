@@ -1,4 +1,4 @@
-import {Agent} from '@/utils/types'
+import {Agent, Property} from '@/utils/types'
 
 export async function get_users() {
   try {
@@ -21,6 +21,20 @@ export async function get_agents() {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
     const data: Agent[]  = await res.json();
+    console.log(data);
+    return data
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function get_properties() {
+  try {
+    const res = await fetch("http://localhost:8000/api/v1/properties/");
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+    const data: Property[]  = await res.json();
     console.log(data);
     return data
   } catch (error) {

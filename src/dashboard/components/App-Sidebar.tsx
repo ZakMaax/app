@@ -71,7 +71,7 @@ export default function AppSidebar() {
 
     <Sidebar collapsible="icon">
       <SidebarHeader className="py-2">
-        <Link to='/dashboard' className="flex items-center gap-1">
+        <Link to='/admin-dashboard' className="flex items-center gap-1">
           <img src={logo} alt="" className={`${open ? "w-20 h-20" : "w-16 h-16"} object-contain`} />
           <h1 className={`text-xl ${open ? "block" : "hidden"}`}>Guryasamo</h1>
         </Link>

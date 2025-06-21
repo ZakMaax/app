@@ -6,7 +6,7 @@ import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import {Property} from '@/utils/types'
 
 export default function DashboardProperties() {
-  const propertiesData: Property[] = useLoaderData()
+  const { properties, role } = useLoaderData() as { properties: Property[], role: string };
   const navigate = useNavigate()
 
   const handleEditProperty = (property: Property) => {
@@ -27,17 +27,16 @@ export default function DashboardProperties() {
       <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-3">
         <div className="flex items-center justify-between">
             <h1 className="text-xl font-medium">Properties</h1>
-            <Link
-                to={'add-property'}
-            >
+            {role === "admin" && (
+              <Link to={'add-property'}>
                 <Button className="cursor-pointer flex items-center gap-2 hover:opacity-80">
-                    <Plus className="font-medium" /> <span>Add Property</span>
+                  <Plus className="font-medium" /> <span>Add Property</span>
                 </Button>
-          
-            </Link>
+              </Link>
+            )}
         </div>
 
-        <PropertiesTable data={propertiesData} onEdit={handleEditProperty} />
+        <PropertiesTable data={properties} role={role} onEdit={handleEditProperty} />
       </div>
 
     </div>

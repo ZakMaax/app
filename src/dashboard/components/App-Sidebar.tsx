@@ -1,4 +1,4 @@
-import { ChevronUp, Home, Inbox, LogOut, Search, Settings, User, User2, Users} from "lucide-react"
+import { ChevronUp, Home, Inbox, LogOut,  Settings, User, User2, Users} from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,7 @@ import { useTheme } from "@/components/theme-provider"
 import Logo_light from '@/assets/Logo-no-bg.png'
 import Logo_dark from '@/assets/GS-dark-no-bg.png'
 import { Link } from "react-router-dom";
+import { getUserFromToken } from "@/utils/auth"
 
 import {
   DropdownMenu,
@@ -26,34 +27,41 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import React from "react"
 
-const items = [
-  {
-    title: "Home",
-    url: "/admin-dashboard",
-    icon: Home,
-  },
-  {
-    title: "Properties",
-    url: "properties",
-    icon: Inbox,
-  },
-  {
-    title: "Users",
-    url: "users",
-    icon: Users,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+type link = {
+  title: string,
+  url: string,
+  icon: React.ElementType
+}
+
+const adminLinks: link[] = [
+  { title: "Home", url: "/admin-dashboard", icon: Home },
+  { title: "Properties", url: "properties", icon: Inbox },
+  { title: "Users", url: "users", icon: Users },
+];
+
+const agentLinks: link[] = [
+  { title: "Home", url: "/admin-dashboard", icon: Home },
+  { title: "My Properties", url: "properties", icon: Inbox },
+];
+
+const user = getUserFromToken();
+
+let items: link[] = [];
+let sidebarLabel = "Dashboard";
+
+if (user) {
+  if (user.role === "admin") {
+    items = adminLinks;
+    sidebarLabel = "Admin";
+  } else if (user.role === "agent") {
+    items = agentLinks;
+    sidebarLabel = "Agent";
+  }
+}
+
+
 export default function AppSidebar() {
   const { theme } = useTheme()
   const { open } = useSidebar()
@@ -79,7 +87,7 @@ export default function AppSidebar() {
       <SidebarSeparator/>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Admin</SidebarGroupLabel>
+          <SidebarGroupLabel>{sidebarLabel}</SidebarGroupLabel>
           <SidebarGroupContent>
               <SidebarMenu>
                   {

@@ -16,11 +16,12 @@ import EditUser from "@/dashboard/pages/EditUser";
 import UserDetails from "@/dashboard/pages/UserDetails";
 import LoginForm from "@/dashboard/pages/Login";
 import {get_users, get_agents, get_properties} from "@/API/api"
-
 import "leaflet/dist/leaflet.css";
 import DashboardProperties from "./dashboard/pages/Dashboard-Properties";
 import EditProperty from "./dashboard/pages/EditProperty";
 import DashboardPropertyDetails from "@/dashboard/pages/DashboardPropertyDetails";
+import { requireAuth } from "@/utils/auth";
+import { Agent } from "@/utils/types";
 
 const router = createBrowserRouter([
 
@@ -54,35 +55,60 @@ const router = createBrowserRouter([
   {
     path: "admin-dashboard/",
     Component: Layout,
+    loader: async () => {
+      const user = requireAuth(["admin", "agent"]);
+      let agents: Agent[] | undefined;
+      if (user.role === "admin") {
+        agents = await get_agents();
+      } 
+      return {agents};
+    }, 
 
     children:[
-      {index: true, loader: async () => {
-        const agents = await get_agents() 
-        return agents;
-      }, Component: Dashboard},
-      {path: 'properties', loader: async () => {
-        const properties = await get_properties() 
-        return properties
-      }, Component: DashboardProperties},
-      { path: 'properties/:propertyId', Component: DashboardPropertyDetails},
+      {index: true, loader: () => requireAuth(["admin", "agent"]), Component: Dashboard},
+
+      // Admin only
+      {
+        path: 'properties',
+        loader: async () => {
+          const user = requireAuth(["admin", "agent"]);
+          let properties;
+          if (user.role === "admin") {
+            properties = await get_properties();
+          } else {
+            properties = await get_properties({ userID: user.sub }); // <-- use userID
+          }
+          return { properties, role: user.role };
+        },
+        Component: DashboardProperties
+      },
       {path: 'properties/add-property', loader: async () => {
-        const agents = await get_agents()
+        requireAuth(["admin"]);
+        const agents = await get_agents();
         return agents;
       }, Component: CreateProperty},
-      {path: 'properties/edit-property', Component: EditProperty},
+
+      {path: 'properties/edit-property', loader: () => requireAuth(["admin"]), Component: EditProperty},
+
       {path: 'users', loader: async () => {
-        const users = await get_users() 
-        return users
+        requireAuth(["admin"]);
+        const users = await get_users();
+        return users;
       }, Component: Users},
-      {path: 'users/:userId', Component: UserDetails},
-      {path: 'users/add-user', Component: CreateUser},
-      {path: 'users/edit-user', Component: EditUser},
+
+      {path: 'users/:userId', loader: () => requireAuth(["admin"]), Component: UserDetails},
+      {path: 'users/add-user', loader: () => requireAuth(["admin"]), Component: CreateUser},
+      {path: 'users/edit-user', loader: () => requireAuth(["admin"]), Component: EditUser},
+      { path: 'properties/:propertyId', loader: () => requireAuth(["admin", "agent"]), Component: DashboardPropertyDetails},
+
       {
         path: "*",
         element: <Error /> 
       }
     ]
   }
+
+
 ]);
 
 

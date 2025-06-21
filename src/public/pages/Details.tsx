@@ -13,13 +13,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Appointment from "../components/Appointment";
 import Default from "@/assets/Default.webp";
+import { PropertyWithAgent } from "@/utils/types";
 
 export default function Details() {
   const { listingID } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<PropertyWithAgent | null>(null);
 
   useEffect(() => {
     async function getProperty() {
@@ -83,6 +84,9 @@ export default function Details() {
     );
 
   if (!data) return null;
+
+  const latitude = data.latitude ?? 0;
+  const longitude = data.longitude ?? 0;
 
   // Build images array
   const images =
@@ -155,23 +159,23 @@ export default function Details() {
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <div className="flex items-center gap-4 mb-4">
               <img
-                src={data.agent.avatar_url ? `http://localhost:8000/${data.agent.avatar_url}` : `http://localhost:8000/uploads/default_avatar.png`}
+                src={data.agent?.avatar_url ? `http://localhost:8000${data.agent?.avatar_url}` : `http://localhost:8000/uploads/default_avatar.png`}
                 alt="Agent"
                 className="w-16 h-16 rounded-full object-cover border-2 border-primary"
               />
               <div>
-                <h3 className="font-bold text-lg">{data.agent.name || "Agent"}</h3>
+                <h3 className="font-bold text-lg">{data.agent?.name || "Agent"}</h3>
                 <p className="text-gray-600">Real Estate Agent</p>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-gray-700">
                 <MdPhone className="text-primaryColor" />
-                <span>{data.agent.phone_number || "N/A"}</span>
+                <span>{data.agent?.phone_number || "N/A"}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <MdEmail className="text-primaryColor" />
-                <span>{data.agent.email || "N/A"}</span>
+                <span>{data.agent?.email || "N/A"}</span>
               </div>
             </div>
           </div>
@@ -185,7 +189,7 @@ export default function Details() {
           <MapPinHouse />
         </div>
         <div className="rounded-xl overflow-hidden shadow-lg h-[450px]">
-          <Map location={[data.latitude, data.longitude]} />
+          <Map location={[latitude, longitude]} />
         </div>
       </div>
     </div>

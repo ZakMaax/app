@@ -28,9 +28,14 @@ export async function get_agents() {
   }
 }
 
-export async function get_properties() {
+export async function get_properties(params?: { userID?: string }) {
+  let url = "http://127.0.0.1:8000/api/v1/properties";
+  console.log(params)
+  if (params?.userID) {
+    url += `?agent_id=${params.userID}`;
+  }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/properties/");
+    const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }

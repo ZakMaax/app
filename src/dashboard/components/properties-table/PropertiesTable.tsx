@@ -18,10 +18,11 @@ import toast from "react-hot-toast";
 
 interface PropertiesTableProps {
   data: Property[];
+  role: string;
   onEdit: (property: Property) => void;
 }
 
-export default function PropertiesTable({ data, onEdit }: PropertiesTableProps) {
+export default function PropertiesTable({ data, role, onEdit }: PropertiesTableProps) {
   const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
   const navigate = useNavigate();
 
@@ -51,7 +52,7 @@ export default function PropertiesTable({ data, onEdit }: PropertiesTableProps) 
       if (property) setPropertyToDelete(property);
     },
     onEdit,
-  });
+  }, role);
 
   return (
     <div className="container mx-auto py-10">

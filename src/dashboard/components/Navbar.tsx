@@ -1,6 +1,5 @@
 import { LogOut, Settings, User, PanelRightClose, PanelLeftClose} from "lucide-react";
-import { Link } from "react-router-dom";
-import me from '@/assets/me.png'
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -13,9 +12,17 @@ import {
 import { ModeToggle } from "@/components/mode-toggle";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-
+import { getUserFromToken } from "@/utils/auth";
 
 export default function Navbar() {
+
+  const navigate = useNavigate()
+  const user = getUserFromToken()
+
+  function logout(){
+    localStorage.removeItem('access_token')
+    navigate('/login');
+  }
 
   const {toggleSidebar, open} = useSidebar()
 
@@ -35,16 +42,21 @@ export default function Navbar() {
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar>
-            <AvatarImage src={me} />
-            <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage src={user?.avatar || "http://localhost:8000/uploads/default_avatar.png"} />
+            <AvatarFallback>{user?.name?.slice(0,2).toUpperCase() || "CN"}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={10}>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem><User className="h-[1.2rem] w-[1.2rem] mr-2"/> Profile</DropdownMenuItem>
           <DropdownMenuItem><Settings className="h-[1.2rem] w-[1.2rem] mr-2"/> Settings</DropdownMenuItem>
-          <DropdownMenuItem variant="destructive"><LogOut className="h-[1.2rem] w-[1.2rem] mr-2"/> Logout</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive">
+            <button onClick={logout} className="flex gap-2.5">
+              <LogOut className="h-[1.2rem] w-[1.2rem] mr-2"/>
+              Logout
+            </button>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

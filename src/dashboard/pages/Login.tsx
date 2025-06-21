@@ -39,6 +39,7 @@ export default function LoginForm() {
   const navigate = useNavigate()
 
   const onSubmit = async (values: loginData) => {
+    console.log("Submitting, VALUSE:", values)
     setLoading(true)
     setError("");
     try {

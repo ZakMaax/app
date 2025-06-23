@@ -27,7 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 type link = {
   title: string,
@@ -46,26 +46,35 @@ const agentLinks: link[] = [
   { title: "My Properties", url: "properties", icon: Inbox },
 ];
 
-const user = getUserFromToken();
-
-let items: link[] = [];
-let sidebarLabel = "Dashboard";
-
-if (user) {
-  if (user.role === "admin") {
-    items = adminLinks;
-    sidebarLabel = "Admin";
-  } else if (user.role === "agent") {
-    items = agentLinks;
-    sidebarLabel = "Agent";
-  }
-}
 
 
 export default function AppSidebar() {
   const { theme } = useTheme()
   const { open } = useSidebar()
+  const [items, setItems] = useState<link[]>([]);
+  const [sidebarLabel, setSidebarLabel] = useState("Dashboard");
 
+  const access_token = localStorage.getItem("access_token")
+
+  useEffect(() => {
+    const currentUser = getUserFromToken();
+
+    if (currentUser) {
+      if (currentUser.role === "admin") {
+        setItems(adminLinks);
+        setSidebarLabel("Admin");
+      } else if (currentUser.role === "agent") {
+        setItems(agentLinks);
+        setSidebarLabel("Agent");
+      } else {
+        setItems([]);
+        setSidebarLabel("Dashboard");
+      }
+    } else {
+      setItems([]);
+      setSidebarLabel("Dashboard");
+    }
+  }, [access_token]);
 
     const effectiveTheme = theme === 'system'
     ? window.matchMedia('(prefers-color-scheme: dark)').matches 
@@ -74,6 +83,8 @@ export default function AppSidebar() {
     : theme
 
   const logo = effectiveTheme === 'dark' ? Logo_dark : Logo_light
+
+
 
   return (
 

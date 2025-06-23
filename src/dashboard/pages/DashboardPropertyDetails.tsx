@@ -13,7 +13,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge"
 import Default from "@/assets/Default.webp";
 import Map from "@/public/components/Map";
+import Carousel from "@/components/Carousel";
 import { PropertyWithAgent } from "@/utils/types";
+
 
 export default function DashboardPropertyDetails() {
   const { propertyId } = useParams();
@@ -92,6 +94,8 @@ export default function DashboardPropertyDetails() {
   const latitude = data.latitude ?? 0;
   const longitude = data.longitude ?? 0;
 
+  console.log(data)
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <Card>
@@ -118,12 +122,8 @@ export default function DashboardPropertyDetails() {
           {/* Images + Details Side by Side */}
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Carousel/Images */}
-            <div className="rounded-xl overflow-hidden shadow border bg-muted">
-              <img
-                src={images[0]}
-                alt={data.title}
-                className="object-cover w-full h-72"
-              />
+            <div className="rounded-xl overflow-hidden shadow border bg-muted h-80 md:h-96">
+                <Carousel slides={images} autoSlide={true} />
             </div>
             {/* Details, Price, Description */}
             <div className="flex flex-col gap-4 h-full">
@@ -166,7 +166,7 @@ export default function DashboardPropertyDetails() {
             >
               <div className="bg-muted p-6 rounded-xl shadow-sm border flex flex-col md:flex-row gap-6 items-center mb-8 hover:bg-accent transition-colors cursor-pointer">
                 <img
-                  src={data.agent?.avatar_url ? `http://localhost:8000/${data.agent.avatar_url}` : `http://localhost:8000/uploads/default_avatar.png`}
+                  src={data.agent?.avatar_url ? `http://localhost:8000${data.agent.avatar_url}` : `http://localhost:8000/uploads/default_avatar.png`}
                   alt="Agent"
                   className="w-16 h-16 rounded-full object-cover border-2 border-primary"
                 />

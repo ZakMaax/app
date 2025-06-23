@@ -1,27 +1,30 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {Toaster} from "react-hot-toast"
-import Home from "@/public/pages/Home"
-import About from "@/public/pages/About"
-import Properties from "@/public/pages/Properties";
-import PublicLayout from "@/public/pages/RootLayout";
-import Error404 from "@/public/pages/Error404";
-import Details from "@/public/pages/Details";
-import Layout from "@/dashboard/pages/Layout";
-import Dashboard from "@/dashboard/pages/Dashboard"
-import Error from "@/dashboard/pages/Error"
-import Users from "@/dashboard/pages/Users"
-import CreateProperty from "@/dashboard/pages/CreateProperty";
-import CreateUser from "@/dashboard/pages/CreateUser";
-import EditUser from "@/dashboard/pages/EditUser";
-import UserDetails from "@/dashboard/pages/UserDetails";
-import LoginForm from "@/dashboard/pages/Login";
+const Home = lazy(() => import("@/public/pages/Home"));
+const About = lazy(() => import("@/public/pages/About"));
+const ContactPage = lazy(() => import("@/public/pages/Contact"));
+const Properties = lazy(() => import("@/public/pages/Properties"));
+const PublicLayout = lazy(() => import("@/public/pages/RootLayout"));
+const Error404 = lazy(() => import("@/public/pages/Error404"));
+const Details = lazy(() => import("@/public/pages/Details"));
+const Layout = lazy(() => import("@/dashboard/pages/Layout"));
+const Dashboard = lazy(() => import("@/dashboard/pages/Dashboard"));
+const Error = lazy(() => import("@/dashboard/pages/Error"));
+const Users = lazy(() => import("@/dashboard/pages/Users"));
+const CreateProperty = lazy(() => import("@/dashboard/pages/CreateProperty"));
+const CreateUser = lazy(() => import("@/dashboard/pages/CreateUser"));
+const EditUser = lazy(() => import("@/dashboard/pages/EditUser"));
+const UserDetails = lazy(() => import("@/dashboard/pages/UserDetails"));
+const LoginForm = lazy(() => import("@/dashboard/pages/Login"));
+const DashboardProperties = lazy(() => import("@/dashboard/pages/Dashboard-Properties"));
+const EditProperty = lazy(() => import("@/dashboard/pages/EditProperty"));
+const DashboardPropertyDetails = lazy(() => import("@/dashboard/pages/DashboardPropertyDetails"));
 import {get_users, get_agents, get_properties} from "@/API/api"
 import "leaflet/dist/leaflet.css";
-import DashboardProperties from "./dashboard/pages/Dashboard-Properties";
-import EditProperty from "./dashboard/pages/EditProperty";
-import DashboardPropertyDetails from "@/dashboard/pages/DashboardPropertyDetails";
 import { requireAuth } from "@/utils/auth";
 import { Agent } from "@/utils/types";
+import PageLoader from "@/components/PageLoader";
 
 const router = createBrowserRouter([
 
@@ -35,8 +38,18 @@ const router = createBrowserRouter([
     Component: PublicLayout,
     errorElement: <Error404 />,
     children: [
-      { index: true, Component: Home },
-      { path: "about", Component: About },
+      { index: true, 
+        Component: Home,
+        HydrateFallback: PageLoader
+      },
+      { path: "about", 
+        Component: About,
+        HydrateFallback: PageLoader
+      },
+      { path: "contact", 
+        Component: ContactPage,
+        HydrateFallback: PageLoader
+      },
       { path: "listings/", loader: async ({ request }) => {
         const url = new URL(request.url);
         const params = url.searchParams;
@@ -47,14 +60,23 @@ const router = createBrowserRouter([
           throw new Response("Failed to fetch properties", { status: res.status });
         }
         return await res.json();
-      },Component: Properties },
-      { path: "listings/:listingID", Component: Details },
+      },
+      Component: Properties,
+      HydrateFallback: PageLoader
+    },
+
+      { path: "listings/:listingID", 
+        Component: Details, 
+        HydrateFallback: PageLoader 
+      },
     ],
   },
 
   {
     path: "admin-dashboard/",
+    id: "admin-dashboard",
     Component: Layout,
+    HydrateFallback: PageLoader,
     loader: async () => {
       const user = requireAuth(["admin", "agent"]);
       let agents: Agent[] | undefined;
@@ -80,13 +102,17 @@ const router = createBrowserRouter([
           }
           return { properties, role: user.role };
         },
-        Component: DashboardProperties
+        Component: DashboardProperties,
+        HydrateFallback: PageLoader
       },
       {path: 'properties/add-property', loader: async () => {
         requireAuth(["admin"]);
         const agents = await get_agents();
         return agents;
-      }, Component: CreateProperty},
+      }, 
+      Component: CreateProperty,
+      HydrateFallback: PageLoader
+    },
 
       {path: 'properties/edit-property', loader: () => requireAuth(["admin"]), Component: EditProperty},
 
@@ -94,12 +120,31 @@ const router = createBrowserRouter([
         requireAuth(["admin"]);
         const users = await get_users();
         return users;
-      }, Component: Users},
+      }, 
+      Component: Users,
+      HydrateFallback: PageLoader
+    },
 
-      {path: 'users/:userId', loader: () => requireAuth(["admin"]), Component: UserDetails},
-      {path: 'users/add-user', loader: () => requireAuth(["admin"]), Component: CreateUser},
-      {path: 'users/edit-user', loader: () => requireAuth(["admin"]), Component: EditUser},
-      { path: 'properties/:propertyId', loader: () => requireAuth(["admin", "agent"]), Component: DashboardPropertyDetails},
+      {path: 'users/:userId', 
+        loader: () => requireAuth(["admin"]), 
+        Component: UserDetails, 
+        HydrateFallback: PageLoader
+      },
+      {path: 'users/add-user', 
+        loader: () => requireAuth(["admin"]), 
+        Component: CreateUser, 
+        HydrateFallback: PageLoader
+      },
+      {path: 'users/edit-user', 
+        loader: () => requireAuth(["admin"]), 
+        Component: EditUser, 
+        HydrateFallback: PageLoader
+      },
+      { path: 'properties/:propertyId', 
+        loader: () => requireAuth(["admin", "agent"]), 
+        Component: DashboardPropertyDetails,
+        HydrateFallback: PageLoader
+      },
 
       {
         path: "*",
@@ -114,10 +159,10 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <Suspense fallback={<PageLoader />}>
       <RouterProvider router={router} />
       <div><Toaster position="bottom-right"/></div>
-    </>
+    </Suspense>
   );
 }
 

@@ -21,6 +21,11 @@ interface UsersTableProps {
   onEdit: (user: UserType) => void;
 }
 
+const filterableColumns = [
+  { label: "Name", id: "name" },
+  { label: "Email", id: "email" },
+]
+
 export default function UsersTable({ data, onEdit }: UsersTableProps) {
   const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
   const navigate = useNavigate()
@@ -56,7 +61,7 @@ export default function UsersTable({ data, onEdit }: UsersTableProps) {
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={getColumns} data={data} message="No Users" />
+      <DataTable columns={getColumns} data={data} filterableColumns={filterableColumns} message="No Users" />
       <AlertDialog open={!!userToDelete} onOpenChange={open => !open && setUserToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

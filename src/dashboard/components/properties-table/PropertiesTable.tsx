@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { authFetch } from "@/utils/auth"
 
 interface PropertiesTableProps {
   data: Property[];
@@ -22,15 +23,29 @@ interface PropertiesTableProps {
   onEdit: (property: Property) => void;
 }
 
+const filterableColumns = [
+  { label: "Title", id: "title" },
+  { label: "City", id: "city" },
+  { label: "Address", id: "address" },
+  { label: "Type", id: "type" },
+]
+
 export default function PropertiesTable({ data, role, onEdit }: PropertiesTableProps) {
   const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
   const navigate = useNavigate();
 
   async function handleDelete(propertyId: string) {
     try {
-      const res = await fetch(
+      const token = localStorage.getItem("access_token")
+      const res = await authFetch(
         `http://localhost:8000/api/v1/properties/property/${propertyId}`,
-        { method: "DELETE" }
+        { 
+          method: "DELETE",
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        },
+        
       );
       const result = await res.json();
       if (res.ok) {
@@ -56,7 +71,7 @@ export default function PropertiesTable({ data, role, onEdit }: PropertiesTableP
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={getColumns} data={data} message="No Properties" />
+      <DataTable columns={getColumns} data={data} message="No Properties" filterableColumns={filterableColumns} />
       <AlertDialog open={!!propertyToDelete} onOpenChange={open => !open && setPropertyToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

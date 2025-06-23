@@ -7,7 +7,7 @@ import {
 } from "react-icons/md";
 import { MapPinHouse } from "lucide-react";
 import { FaRulerCombined, FaArrowRight } from "react-icons/fa";
-import Carousel from "@/public/components/Carousel";
+import Carousel from "@/components/Carousel";
 import Map from "../components/Map";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";

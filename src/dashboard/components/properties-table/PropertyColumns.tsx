@@ -3,6 +3,8 @@ import { Property, PropertyType, SaleRent } from '@/utils/types'
 import { StatusDropdown } from '@/dashboard/components/StatusDropdown';
 import FeaturedCell from '@/dashboard/components/FeaturedToggle'
 import { PropertyActions } from '@/dashboard/components/PropertyActions';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown } from 'lucide-react';
 
 interface ColumnProps {
   onDelete: (propertyId: string) => void,
@@ -27,12 +29,32 @@ export const propertyColumns = (
     { accessorKey: 'title', header: 'Title' },
     { accessorKey: 'city', header: 'City' },
     { accessorKey: 'address', header: 'Address' },
-    { accessorKey: 'bedrooms', header: 'Bedrooms' },
+    { accessorKey: 'bedrooms', header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+           Bedrooms
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      )
+    }, },
     { accessorKey: 'bathrooms', header: 'Bathrooms' },
     { accessorKey: 'size', header: 'Size (sqft)' },
     {
       accessorKey: 'price',
-      header: 'Price',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+             Price
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         const price = parseFloat(row.getValue('price'));
         const formatted = new Intl.NumberFormat('en-US', {
@@ -52,7 +74,17 @@ export const propertyColumns = (
     },
     {
       accessorKey: 'sale_or_rent',
-      header: 'For',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+             For
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         const saleOrRent: SaleRent = row.getValue('sale_or_rent');
         return saleOrRent.charAt(0).toUpperCase() + saleOrRent.slice(1);

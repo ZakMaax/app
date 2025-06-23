@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { loginSchema } from '@/utils/schemas'
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Eye, EyeClosed } from 'lucide-react'
 
 type loginData = z.infer<typeof loginSchema>
 
@@ -36,6 +36,7 @@ export default function LoginForm() {
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [passVisiblity, setPassVisibility] = useState(false)
   const navigate = useNavigate()
 
   const onSubmit = async (values: loginData) => {
@@ -55,6 +56,8 @@ export default function LoginForm() {
       }
       const data = await res.json();
       localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      console.log(data)
       navigate("/admin-dashboard");
     } catch {
       setError("Login failed");
@@ -63,8 +66,16 @@ export default function LoginForm() {
     }
   };
 
+  function handlePasswordVisiblity(){
+    setPassVisibility(!passVisiblity)
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-[#18181b]">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background dark:bg-[#18181b]">
+      {/* Header Title */}
+      <h1 className="mb-8 text-3xl font-bold text-center text-primary">
+        GuryaSamo Administration Dashboard
+      </h1>
       <Card className="w-full max-w-md shadow-lg bg-card dark:bg-[#23232a]">
         <CardHeader>
           <CardTitle className="text-2xl">Login to your account</CardTitle>
@@ -102,7 +113,23 @@ export default function LoginForm() {
                       </a>
                     </div>
                     <FormControl>
-                      <Input type="password" placeholder='Password' autoComplete="current-password" {...field} />
+                      <div className="relative">
+                          <Input
+                            type={passVisiblity ? "text" : "password"}
+                            placeholder='Password'
+                            autoComplete="current-password"
+                            {...field}
+                            className="pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={handlePasswordVisiblity}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary focus:outline-none"
+                            tabIndex={-1}
+                          >
+                            {passVisiblity ? <Eye className="w-5 h-5" /> : <EyeClosed className="w-5 h-5" />}
+                          </button>
+                        </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,6 +148,13 @@ export default function LoginForm() {
           </Form>
         </CardContent>
       </Card>
+      {/* Link to public home page */}
+      <Link
+        to="/"
+        className="mt-6 text-primary underline hover:opacity-80 transition"
+      >
+        Go to the website home page
+      </Link>
     </div>
   )
 }

@@ -28,6 +28,7 @@ import ImageUploader from '../components/ImageUploader'
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import {Agent} from "@/utils/types"
+import { authFetch } from "@/utils/auth"
 
 type propertyFormType = z.infer<typeof propertySchema>
 
@@ -88,10 +89,14 @@ const agents: Agent[] = useLoaderData()
         });
         try {
             setSubmitting(true)
-            const response = await fetch('http://127.0.0.1:8000/api/v1/properties/', {
+            const token = localStorage.getItem("access_token");
+            const response = await authFetch('http://127.0.0.1:8000/api/v1/properties/', {
               method: 'POST',
-              body: formData
-            })
+              body: formData,
+              headers: {
+                Authorization: token ? `Bearer ${token}` : "",
+              },
+            });
       
             const res = await response.json()
             if (response.ok) {

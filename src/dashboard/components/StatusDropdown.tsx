@@ -2,18 +2,23 @@ import { PropertyStatus } from '@/utils/types'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { authFetch } from "@/utils/auth"
 
 export function StatusDropdown({ propertyId, initialStatus }: { propertyId: string, initialStatus: PropertyStatus }) {
   const [status, setStatus] = useState<PropertyStatus>(initialStatus)
   const [loading, setLoading] = useState(false)
-
+  const token = localStorage.getItem("access_token")
   const handleChange = async (newStatus: PropertyStatus) => {
     if (newStatus === status) return
     setLoading(true)
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/v1/properties/property/${propertyId}/status`, {
+      const res = await authFetch(`http://127.0.0.1:8000/api/v1/properties/property/${propertyId}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: 
+        { 
+          "Content-Type": "application/json", 
+          Authorization: token ? `Bearer ${token}` : "",
+        },
         body: JSON.stringify({ status: newStatus }),
       })
       if (res.ok) setStatus(newStatus)

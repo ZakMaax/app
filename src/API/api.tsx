@@ -7,10 +7,9 @@ export async function get_users() {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
     const data = await res.json();
-    console.log(data);
     return data
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -21,10 +20,9 @@ export async function get_agents() {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
     const data: Agent[]  = await res.json();
-    console.log(data);
     return data
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -40,10 +38,9 @@ export async function get_properties(params?: { userID?: string }) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
     const data: Property[]  = await res.json();
-    console.log(data);
     return data
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 

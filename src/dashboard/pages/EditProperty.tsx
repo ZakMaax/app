@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import ImageUploader from '@/dashboard/components/ImageUploader'
-
+import { authFetch } from "@/utils/auth"
 export default function EditProperty() {
   const [submitting, setSubmitting] = useState(false)
   const [files, setFiles] = useState<FilesWithPreview[]>([])
@@ -134,10 +134,14 @@ export default function EditProperty() {
     }
 
     try {
+      const token = localStorage.getItem("access_token")
       setSubmitting(true);
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/properties/property/${propertyToEdit.id}`, {
+      const response = await authFetch(`http://127.0.0.1:8000/api/v1/properties/property/${propertyToEdit.id}`, {
         method: 'PUT',
         body: formData,
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
       });
 
       const res = await response.json();

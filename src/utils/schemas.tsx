@@ -370,3 +370,48 @@ export const loginSchema = z.object({
   })
 })
 
+
+export enum PreferredContactMethod {
+  phone = "phone",
+  email = "email"
+}
+
+export const contactSchema = z.object({
+  name: z
+    .string({ required_error: "Name is required" })
+    .min(4, { message: "Name must be at least 4 characters" })
+    .max(50, { message: "Name must be less than 50 characters" })
+    .refine(val => val.trim().length > 0, {
+      message: "Name cannot be just whitespace"
+    })
+    .refine(val => isNaN(Number(val)), {
+      message: "Name cannot be a number"
+    }), 
+    email: z
+    .string({ 
+      required_error: "Email is required", 
+      invalid_type_error: "Email must be a string" 
+    })
+    .email({ message: "Invalid email address" })
+    .max(100, { message: "Email must be less than 100 characters" }),
+
+  phone_number: z
+    .string({ required_error: "Phone number is required" })
+    .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+  
+  subject: z.string({
+      required_error: 'Subject is required.',
+      invalid_type_error: 'Subject must be a valid text.',
+    }).min(10, {
+      message: 'Subject must be at least 10 characters long.',
+    }),
+  message: z.string({
+      required_error: 'Message is required.',
+      invalid_type_error: 'Message must be a valid text.',
+    }).min(10, {
+      message: 'Message must be at least 10 characters long.',
+    }),
+  preferred_contact_method: z.enum([PreferredContactMethod.phone, PreferredContactMethod.email], {
+      required_error: 'Email or Phone option is required.',
+    }),
+})

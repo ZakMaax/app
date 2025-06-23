@@ -1,7 +1,12 @@
+import React from 'react'
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  ColumnFiltersState,
+  getFilteredRowModel,
+  SortingState,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -13,24 +18,73 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   message: string
+  filterableColumns?: {label: string, id: string}[]
 }
 
 
-export function DataTable<TData, TValue>({columns, data, message}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  message,
+  filterableColumns = [],
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [filterColumn, setFilterColumn] = React.useState(
+    filterableColumns[0]?.id
+  )
+
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+      columnFilters 
+    },
   })
+
+
 
   return (
     <div className="rounded-md border">
+      <div className="flex items-center py-4 pl-2 gap-2">
+        {/* Input for filter value */}
+        <Input
+          placeholder={`Filter by ${filterColumn}...`}
+          value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
+          onChange={event =>
+            table.getColumn(filterColumn)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        {/* Dropdown for selecting filter column */}
+        <Select value={filterColumn} onValueChange={setFilterColumn}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select column" />
+          </SelectTrigger>
+          <SelectContent>
+            {filterableColumns.map(col =>
+              <SelectItem key={col.id} value={col.id}>
+                {col.label}
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

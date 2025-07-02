@@ -1,32 +1,57 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { appointmentSchema } from "@/utils/schemas";
+import { z } from "zod";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { MdClose } from "react-icons/md";
+import { DateTimePickerForm } from "./DateTimePicker";
+import { useState } from "react";
+import { PhoneInput } from "@/components/Phone-input";
+import { Loader2 } from "lucide-react";
 
+export type AppointmentFormData = z.infer<typeof appointmentSchema> & {
+  property_id: string;
+  agent_id?: string;
+};
 
+type AppointmentProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: AppointmentFormData) => Promise<void>;
+  propertyId: string;
+  agentId?: string;
+};
 
-type appointmentProps = {
-  isOpen: boolean,
-  onClose: ()=> void,
-  onSubmit: (formData)=> void
-}
+export default function Appointment({ isOpen, onClose, onSubmit, propertyId, agentId }: AppointmentProps) {
+  const [submitting, setSubmitting] = useState(false);
 
-export default function Appointment({ isOpen, onClose, onSubmit }: appointmentProps) {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phone: "",
-    date: "",
-    hours: "",
+  const form = useForm<z.infer<typeof appointmentSchema>>({
+    resolver: zodResolver(appointmentSchema),
+    defaultValues: {
+      customer_name: "",
+      customer_phone: "",
+      appointment_datetime: undefined,
+    },
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-    onClose();
-  };
+  async function handleSubmit(values: z.infer<typeof appointmentSchema>) {
+    setSubmitting(true);
+    try {
+      // Compose the payload for backend
+      const payload = {
+        ...values,
+        property_id: propertyId,
+        agent_id: agentId,
+      };
+      await onSubmit(payload);
+      onClose();
+      form.reset();
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (!isOpen) return null;
 
@@ -41,91 +66,67 @@ export default function Appointment({ isOpen, onClose, onSubmit }: appointmentPr
             <MdClose className="text-3xl text-red-400 hover:text-red-700" />
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="p-4 space-y-4">
+            <FormField
+              control={form.control}
+              name="customer_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Full Name"
+                      {...field}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            <FormField control={form.control} name="customer_phone" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone</FormLabel>
+              <FormControl>
+                <PhoneInput placeholder="Enter phone number" international defaultCountry="SO" {...field} />
+              </FormControl>
+              <FormDescription>
+                E.g. (63-444-4444)-Telesom<br />
+                &emsp;&emsp;(65-999-9999)-Somtel<br />
+                &emsp;&emsp;(67-777-7777)-Soltelco
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )} />
+            <FormField
+              control={form.control}
+              name="appointment_datetime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date & Time</FormLabel>
+                  <FormControl>
+                    <DateTimePickerForm
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="date"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Date
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="hours"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Time
-              </label>
-              <input
-                type="time"
-                id="hours"
-                name="hours"
-                value={formData.hours}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          </div>
-
-          <div className="pt-4">
-            <button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-white py-2 px-4 rounded-md transition duration-200"
-            >
-              Schedule Viewing
-            </button>
-          </div>
-        </form>
+           <Button type="submit" disabled={submitting} className="cursor-pointer w-full place-self-center rounded-lg py-4 hover:opacity-80">
+            {submitting ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Scheduling...
+            </>
+          ) : (
+            'Schedule'
+          )}
+        </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { LogOut, Settings, User, PanelRightClose, PanelLeftClose} from "lucide-react";
+import { LogOut, User, PanelRightClose, PanelLeftClose} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -21,7 +21,7 @@ export default function Navbar() {
 
   function logout(){
     localStorage.removeItem('access_token')
-    navigate('/login');
+    navigate('/login' , { replace: true });
   }
 
   const {toggleSidebar, open} = useSidebar()
@@ -36,7 +36,7 @@ export default function Navbar() {
 
       
       <div className="flex  items-center gap-4">
-         <Link to='/admin-dashboard'>Dashboard</Link>
+         <Link to='/dashboard'>Dashboard</Link>
          <ModeToggle/>
 
       <DropdownMenu>
@@ -49,9 +49,13 @@ export default function Navbar() {
         <DropdownMenuContent sideOffset={10}>
           <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem><User className="h-[1.2rem] w-[1.2rem] mr-2"/> Profile</DropdownMenuItem>
-          <DropdownMenuItem><Settings className="h-[1.2rem] w-[1.2rem] mr-2"/> Settings</DropdownMenuItem>
-          <DropdownMenuItem variant="destructive">
+          <DropdownMenuItem asChild>
+            <Link to={'/profile'}>
+             <User className="h-[1.2rem] w-[1.2rem] mr-2"/> 
+              Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" asChild>
             <button onClick={logout} className="flex gap-2.5">
               <LogOut className="h-[1.2rem] w-[1.2rem] mr-2"/>
               Logout

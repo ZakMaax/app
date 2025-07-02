@@ -370,6 +370,17 @@ export const loginSchema = z.object({
   })
 })
 
+export const updateProfileSchema = z.object({
+  username: z
+    .string({ required_error: "Username is required" }),
+  old_password: z.string({
+      required_error: "Password is required"
+    }),
+  new_password: z.string({
+    required_error: "Password is required"
+  })
+})
+
 
 export enum PreferredContactMethod {
   phone = "phone",
@@ -415,3 +426,10 @@ export const contactSchema = z.object({
       required_error: 'Email or Phone option is required.',
     }),
 })
+
+
+export const appointmentSchema = z.object({
+  customer_name: z.string().min(2, "Name is required"),
+  customer_phone: z.string().min(7, "Phone is required"),
+  appointment_datetime: z.date({ required_error: "Date and time is required" }),
+});

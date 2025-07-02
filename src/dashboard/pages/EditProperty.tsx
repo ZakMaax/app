@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { editPropertySchema, PropertyType, FilesWithPreview } from '@/utils/schemas'
 import { Property, SaleRent, Agent } from '@/utils/types'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -87,20 +87,9 @@ export default function EditProperty() {
         agent_id: propertyToEdit.agent_id ?? '',
         description: propertyToEdit.description ?? '',
         files: [],
-      });
-      if (propertyToEdit.images && propertyToEdit.images.length > 0) {
-        setFiles(
-            propertyToEdit.images.map((url, idx) => ({
-              name: `existing_image_${idx}`,
-              preview: url,
-              size: 0,
-              type: "image", // or "image/jpeg" if you want
-              lastModified: Date.now(),
-            } as FilesWithPreview))
-          );
-      } else {
-        setFiles([]);
-      }
+      }); 
+      setFiles([]);
+      
     }
   }, [propertyToEdit, form]);
 
@@ -356,6 +345,9 @@ export default function EditProperty() {
             <FormControl>
               <ImageUploader maximumFiles={10} files={files} setFiles={setFiles} />
             </FormControl>
+            <FormDescription>
+              If you add new images, the old ones will be replaced. If you do not add any images, the existing images will be kept.
+            </FormDescription>
             <FormMessage />
           </FormItem>
         </div>

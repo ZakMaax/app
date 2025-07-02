@@ -14,6 +14,8 @@ import { useParams } from "react-router-dom";
 import Appointment from "../components/Appointment";
 import Default from "@/assets/Default.webp";
 import { PropertyWithAgent } from "@/utils/types";
+import {toast} from 'react-hot-toast'
+import type { AppointmentFormData } from "@/public/components/Appointment";
 
 export default function Details() {
   const { listingID } = useParams();
@@ -48,10 +50,6 @@ export default function Details() {
     getProperty();
   }, [listingID]);
 
-  const handleScheduleSubmit = (formData: any) => {
-    console.log("Viewing scheduled:", formData);
-    // Here you would typically send the data to your backend
-  };
 
   if (loading)
     return (
@@ -96,6 +94,26 @@ export default function Details() {
             `http://localhost:8000/uploads/properties/${data.id}/${img}`
         )
       : [Default];
+
+
+  const handleScheduleSubmit = async (formData: AppointmentFormData) => {
+        try {
+          const res = await fetch("http://localhost:8000/api/v1/appointments/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            toast.error(data?.message || "Failed to schedule appointment", {duration: 5000});
+            return;
+          }
+          toast.success(data?.message || "Appointment scheduled successfully!", {duration: 5000});
+        } catch (err) {
+          console.error(err)
+          toast.error("Network error. Please try again.");
+        }
+      };
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-30 pb-8">
@@ -153,6 +171,8 @@ export default function Details() {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onSubmit={handleScheduleSubmit}
+            propertyId={data.id}
+            agentId={data.agent?.id}
           />
 
           {/* Agent contact card (replace with real agent data if available) */}

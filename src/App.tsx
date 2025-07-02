@@ -17,10 +17,12 @@ const CreateUser = lazy(() => import("@/dashboard/pages/CreateUser"));
 const EditUser = lazy(() => import("@/dashboard/pages/EditUser"));
 const UserDetails = lazy(() => import("@/dashboard/pages/UserDetails"));
 const LoginForm = lazy(() => import("@/dashboard/pages/Login"));
+const Profile = lazy(() => import("@/dashboard/pages/Profile"));
 const DashboardProperties = lazy(() => import("@/dashboard/pages/Dashboard-Properties"));
 const EditProperty = lazy(() => import("@/dashboard/pages/EditProperty"));
 const DashboardPropertyDetails = lazy(() => import("@/dashboard/pages/DashboardPropertyDetails"));
-import {get_users, get_agents, get_properties} from "@/API/api"
+import { get_users, get_agents, get_properties, get_appointments } from "@/API/api";
+const DashboardAppointments = lazy(() => import("@/dashboard/pages/Appointments"));
 import "leaflet/dist/leaflet.css";
 import { requireAuth } from "@/utils/auth";
 import { Agent } from "@/utils/types";
@@ -73,8 +75,8 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "admin-dashboard/",
-    id: "admin-dashboard",
+    path: "dashboard/",
+    id: "dashboard",
     Component: Layout,
     HydrateFallback: PageLoader,
     loader: async () => {
@@ -125,6 +127,12 @@ const router = createBrowserRouter([
       HydrateFallback: PageLoader
     },
 
+    {path: 'profile/', 
+      loader: () => requireAuth(["admin", "agent"]), 
+      Component: Profile, 
+      HydrateFallback: PageLoader
+    },
+
       {path: 'users/:userId', 
         loader: () => requireAuth(["admin"]), 
         Component: UserDetails, 
@@ -143,6 +151,21 @@ const router = createBrowserRouter([
       { path: 'properties/:propertyId', 
         loader: () => requireAuth(["admin", "agent"]), 
         Component: DashboardPropertyDetails,
+        HydrateFallback: PageLoader
+      },
+      {
+        path: 'appointments',
+        loader: async () => {
+          const user = requireAuth(["admin", "agent"]);
+          let appointments;
+          if (user.role === "admin") {
+              appointments = await get_appointments();
+          } else {
+              appointments = await get_appointments({ agent_id: user.sub }); // <-- use userID
+          }
+          return { appointments };
+        },
+        Component: DashboardAppointments,
         HydrateFallback: PageLoader
       },
 

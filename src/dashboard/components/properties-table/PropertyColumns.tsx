@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Property, PropertyType, SaleRent } from '@/utils/types'
-import { StatusDropdown } from '@/dashboard/components/StatusDropdown';
+import { StatusDropdown } from '@/dashboard/components/PropertyStatusDropdown';
 import FeaturedCell from '@/dashboard/components/FeaturedToggle'
 import { PropertyActions } from '@/dashboard/components/PropertyActions';
 import { Button } from '@/components/ui/button';

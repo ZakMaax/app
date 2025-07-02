@@ -6,7 +6,7 @@ import AppBarChart from "../components/charts/BarChart";
 import { getUserFromToken } from "@/utils/auth";
 
 export default function Dashboard() {
-  const {agents} = useRouteLoaderData("admin-dashboard")
+  const {agents} = useRouteLoaderData("dashboard")
   const user = getUserFromToken()
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">

@@ -69,3 +69,24 @@ export type UserType = {
     role: Role;
     is_active: boolean
 }
+
+export enum AppointmentStatus {
+  scheduled = "scheduled",
+  pending = "pending",
+  completed = "completed",
+  cancelled = "cancelled",
+  no_show_agent = "no_show_agent",
+  no_show_customer = "no_show_customer",
+}
+
+export type Appointment = {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  appointment_datetime: string;
+  property_id: string;
+  property_title: string;
+  agent_id: string;
+  agent_name: string;
+  appointment_status: AppointmentStatus;
+};

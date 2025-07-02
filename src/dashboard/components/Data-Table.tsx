@@ -21,12 +21,17 @@ import {
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
+interface FilterableColumn {
+  label: string;
+  id: string;
+  options?: string[];
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   message: string
-  filterableColumns?: {label: string, id: string}[]
+  filterableColumns?: FilterableColumn[]
 }
 
 
@@ -62,29 +67,60 @@ export function DataTable<TData, TValue>({
   return (
     <div className="rounded-md border">
       <div className="flex items-center py-4 pl-2 gap-2">
-        {/* Input for filter value */}
-        <Input
-          placeholder={`Filter by ${filterColumn}...`}
-          value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
-          onChange={event =>
-            table.getColumn(filterColumn)?.setFilterValue(event.target.value)
+  {/* Dropdown for selecting filter column */}
+  <Select value={filterColumn} onValueChange={setFilterColumn}>
+    <SelectTrigger className="w-[180px]">
+      <SelectValue placeholder="Select column" />
+    </SelectTrigger>
+    <SelectContent>
+      {filterableColumns.map(col =>
+        <SelectItem key={col.id} value={col.id}>
+          {col.label}
+        </SelectItem>
+      )}
+    </SelectContent>
+  </Select>
+  {/* If options are provided, show dropdown, else show text input */}
+  {(() => {
+    const selected = filterableColumns.find(col => col.id === filterColumn);
+    if (selected?.options) {
+      return (
+        <Select
+        value={
+          (table.getColumn(filterColumn)?.getFilterValue() as string) === "" 
+            ? "__all__" 
+            : (table.getColumn(filterColumn)?.getFilterValue() as string) ?? "__all__"
+        }
+          onValueChange={value => 
+            table.getColumn(filterColumn)?.setFilterValue(value === "__all__" ? "" : value)
           }
-          className="max-w-sm"
-        />
-        {/* Dropdown for selecting filter column */}
-        <Select value={filterColumn} onValueChange={setFilterColumn}>
+        >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select column" />
+            <SelectValue placeholder={`Filter by ${selected.label}...`} />
           </SelectTrigger>
           <SelectContent>
-            {filterableColumns.map(col =>
-              <SelectItem key={col.id} value={col.id}>
-                {col.label}
+          <SelectItem value="__all__">All</SelectItem>
+            {selected.options.map(opt =>
+              <SelectItem key={opt} value={opt}>
+                {opt.replace(/_/g, " ")}
               </SelectItem>
             )}
           </SelectContent>
         </Select>
-      </div>
+      );
+    }
+    return (
+      <Input
+        placeholder={`Filter by ${selected?.label ?? filterColumn}...`}
+        value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
+        onChange={event =>
+          table.getColumn(filterColumn)?.setFilterValue(event.target.value)
+        }
+        className="max-w-sm"
+      />
+    );
+  })()}
+</div>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

@@ -24,7 +24,7 @@ export function PropertyActions({ property, onDelete, onEdit }: PropertyActionsP
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Property actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate(`/admin-dashboard/properties/${property.id}`)}>
+        <DropdownMenuItem onClick={() => navigate(`/dashboard/properties/${property.id}`)}>
           See Property Details
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onEdit(property)}>

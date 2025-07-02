@@ -18,7 +18,7 @@ export function UserActions({ user, onDelete, onEdit }: UserActionsProps) {
         <Button variant="ghost" size="sm">Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => navigate(`/admin-dashboard/users/${user.id}`)}>
+        <DropdownMenuItem onClick={() => navigate(`/dashboard/users/${user.id}`)}>
           See User Details
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onEdit(user)}>

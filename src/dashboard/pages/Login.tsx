@@ -57,7 +57,6 @@ export default function LoginForm() {
       const data = await res.json();
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token);
-      console.log(data)
       navigate("/admin-dashboard");
     } catch {
       setError("Login failed");

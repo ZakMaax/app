@@ -5,6 +5,7 @@ import FeaturedCell from '@/dashboard/components/FeaturedToggle'
 import { PropertyActions } from '@/dashboard/components/PropertyActions';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ColumnProps {
   onDelete: (propertyId: string) => void,
@@ -151,6 +152,31 @@ export const propertyColumns = (
       }
     );
   }
+
+  // Add actions column for agent role (details only)
+if (role === "agent") {
+  baseColumns.push({
+    id: "actions",
+    header: "Property Actions",
+    cell: ({ row }) => {
+      const property = row.original;
+      // Only show details action for agents
+      function DetailsButton() {
+        const navigate = useNavigate();
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/dashboard/properties/${property.id}`)}
+          >
+            See Property Details
+          </Button>
+        );
+      }
+      return <DetailsButton />;
+    },
+  });
+}
 
   return baseColumns;
 };

@@ -10,7 +10,7 @@ export default function DashboardProperties() {
   const navigate = useNavigate()
 
   const handleEditProperty = (property: Property) => {
-    navigate('/admin-dashboard/properties/edit-property', { state: { propertyToEdit: property } });
+    navigate('/dashboard/properties/edit-property', { state: { propertyToEdit: property } });
   };
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

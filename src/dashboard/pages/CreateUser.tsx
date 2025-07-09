@@ -66,7 +66,7 @@ export default function CreateUser() {
         toast.success('User created successfully')
         console.log(res)
         setTimeout(() => {
-          navigate('/admin-dashboard/users')
+          navigate('/dashboard/users')
         }, 2000)
       } else {
         toast.error(res.detail || 'Something happened while creating user')

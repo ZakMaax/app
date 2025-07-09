@@ -72,7 +72,7 @@ async function onSubmit(userData: z.infer<typeof userEditSchema>) {
       if (response.ok) {
         toast.success('User updated successfully');
         setTimeout(() => {
-          navigate('/admin-dashboard/users');
+          navigate('/dashboard/users');
         }, 2000);
       } else {
         toast.error(res.detail || 'Something happened while updating user');

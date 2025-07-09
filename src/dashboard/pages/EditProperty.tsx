@@ -137,7 +137,7 @@ export default function EditProperty() {
       if (response.ok) {
         toast.success('Property updated successfully');
         setTimeout(() => {
-          navigate('/admin-dashboard/properties');
+          navigate('/dashboard/properties');
         }, 2000);
       } else {
         toast.error(res.detail || 'Something happened while updating property');

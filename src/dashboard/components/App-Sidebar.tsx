@@ -136,7 +136,7 @@ export default function AppSidebar() {
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={10} align="end">
         <DropdownMenuItem asChild>
-            <Link to={'profile'}>
+            <Link to={'/dashboard/profile'}>
              <User className="h-[1.2rem] w-[1.2rem] mr-2"/> 
               Profile
             </Link>

@@ -14,7 +14,7 @@ export default function Users() {
   
   
   const handleEditUser = (user: UserType) => {
-    navigate('/admin-dashboard/users/edit-user', { state: { userToEdit: user } });
+    navigate('/dashboard/users/edit-user', { state: { userToEdit: user } });
   };
 
   return (

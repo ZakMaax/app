@@ -103,7 +103,7 @@ const agents: Agent[] = useLoaderData()
               toast.success('Property created successfully')
               console.log(res)
               setTimeout(() => {
-                navigate('/admin-dashboard/properties')
+                navigate('/dashboard/properties')
               }, 2000)
             } else {
               toast.error(res.detail || 'Something happened while creating user')

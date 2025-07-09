@@ -33,10 +33,9 @@ const filterableColumns = [
 export default function PropertiesTable({ data, role, onEdit }: PropertiesTableProps) {
   const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
   const navigate = useNavigate();
-
   async function handleDelete(propertyId: string) {
     try {
-      const token = localStorage.getItem("access_token")
+      const token = localStorage.getItem("access_token");
       const res = await authFetch(
         `http://localhost:8000/api/v1/properties/property/${propertyId}`,
         { 
@@ -45,8 +44,16 @@ export default function PropertiesTable({ data, role, onEdit }: PropertiesTableP
             Authorization: token ? `Bearer ${token}` : "",
           },
         },
-        
       );
+  
+      if (res.status === 204) {
+        setPropertyToDelete(null);
+        toast.success('Property Deleted Successfully');
+        navigate('.', { replace: true });
+        return;
+      }
+  
+      // For other status codes, try to parse JSON
       const result = await res.json();
       if (res.ok) {
         setPropertyToDelete(null);
@@ -56,7 +63,7 @@ export default function PropertiesTable({ data, role, onEdit }: PropertiesTableP
         toast.error(result.detail || 'Something happened while deleting property');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error('Network error occurred');
     }
   }

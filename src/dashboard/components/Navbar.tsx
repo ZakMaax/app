@@ -50,7 +50,7 @@ export default function Navbar() {
           <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link to={'/profile'}>
+            <Link to={'/dashboard/profile'}>
              <User className="h-[1.2rem] w-[1.2rem] mr-2"/> 
               Profile
             </Link>
